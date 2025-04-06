@@ -1,10 +1,10 @@
 <template>
-    <div class="bg-white shadow rounded-lg mb-6 p-4">
+    <div class="bg-gray-100 shadow rounded-lg mb-6 p-4">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
                 <label for="location" class="block text-sm font-medium text-gray-700">Ubicación</label>
                 <select id="location" v-model="filters.location"
-                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                    class="bg-gray-200 mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
                     <option value="">Todas las ubicaciones</option>
                     <option value="CDMX">Ciudad de México</option>
                     <option value="GDL">Guadalajara</option>
@@ -14,18 +14,18 @@
             <div>
                 <label for="type" class="block text-sm font-medium text-gray-700">Tipo de Medio</label>
                 <select id="type" v-model="filters.type"
-                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                    class="bg-gray-200 mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
                     <option value="">Todos los tipos</option>
                     <option value="billboard">Espectacular</option>
                     <option value="digital">Pantalla Digital</option>
                     <option value="transit">Transporte Público</option>
                 </select>
             </div>
-            <div>
+            <!-- <div>
                 <label for="date" class="block text-sm font-medium text-gray-700">Fecha Disponible</label>
                 <input type="date" id="date" v-model="filters.date"
                     class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md" />
-            </div>
+            </div> -->
         </div>
         <div class="mt-4 flex justify-end">
             <button @click="$emit('apply-filters', filters)"

@@ -1,41 +1,33 @@
 <template>
-    <div class="min-h-screen bg-gray-200">
-        <!-- Navbar -->
+    <div class="min-h-screen bg-gray-300">
+
         <Navbar :current-view="currentView" @change-view="currentView = $event"
             @toggle-login-modal="showLoginModal = true" />
 
-        <!-- Main content -->
-        <main>
-            <!-- Home View - Media Listing -->
+        <!-- <main>
             <HomeView v-if="currentView === 'home'" :media-list="mediaList" @view-details="viewMediaDetails"
                 @book-media="bookMedia" />
 
-            <!-- Media Detail View -->
             <MediaDetailView v-if="currentView === 'mediaDetail' && selectedMedia" :media="selectedMedia"
                 @go-back="currentView = 'home'" @book-media="bookMedia" />
 
-            <!-- Booking Form View -->
             <BookingFormView v-if="currentView === 'bookingForm' && selectedMedia" :media="selectedMedia"
                 :booking-form="bookingForm" :validation-errors="validationErrors" @go-back="currentView = 'mediaDetail'"
                 @submit-booking="submitBooking" @update-dates="updateDates" />
 
-            <!-- Payment View -->
             <PaymentView v-if="currentView === 'payment'" :media="selectedMedia" :booking-form="bookingForm"
                 :payment-form="paymentForm" :validation-errors="validationErrors" @go-back="currentView = 'bookingForm'"
                 @process-payment="processPayment" />
 
-            <!-- Booking Success View -->
             <BookingSuccessView v-if="currentView === 'bookingSuccess'" :media="selectedMedia"
                 @view-bookings="currentView = 'bookings'" />
 
-            <!-- Bookings History View -->
             <BookingsView v-if="currentView === 'bookings'" :bookings="userBookings" @go-home="currentView = 'home'"
                 @view-booking-details="viewBookingDetails" />
         </main>
 
-        <!-- Login Modal -->
         <LoginModal v-if="showLoginModal" @close="showLoginModal = false" @login="handleLogin"
-            @show-register="showRegisterForm" />
+            @show-register="showRegisterForm" /> -->
     </div>
 </template>
 
