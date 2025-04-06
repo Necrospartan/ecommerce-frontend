@@ -1,0 +1,164 @@
+<template>
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Mis Reservas
+                    </h3>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                        Historial de espacios publicitarios reservados
+                    </p>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200">
+                <div v-if="bookings.length === 0" class="text-center py-12">
+                    <calendar-icon class="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">
+                        No tienes reservas
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Comienza reservando un espacio publicitario.
+                    </p>
+                    <div class="mt-6">
+                        <button
+                            @click="$emit('go-home')"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                        >
+                            Explorar espacios
+                        </button>
+                    </div>
+                </div>
+
+                <ul v-else role="list" class="divide-y divide-gray-200">
+                    <li
+                        v-for="booking in bookings"
+                        :key="booking.id"
+                        class="px-4 py-4 sm:px-6"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div
+                                    class="flex-shrink-0 h-12 w-12 rounded-md overflow-hidden"
+                                >
+                                    <img
+                                        :src="booking.media.image"
+                                        :alt="booking.media.name"
+                                        class="h-full w-full object-cover"
+                                    />
+                                </div>
+                                <div class="ml-4">
+                                    <div
+                                        class="text-sm font-medium text-gray-900"
+                                    >
+                                        {{ booking.media.name }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ booking.media.location }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ml-2 flex-shrink-0 flex">
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                    :class="
+                                        getBookingStatusClass(booking.status)
+                                    "
+                                >
+                                    {{ getBookingStatusLabel(booking.status) }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2 sm:flex sm:justify-between">
+                            <div class="sm:flex">
+                                <div
+                                    class="flex items-center text-sm text-gray-500"
+                                >
+                                    <calendar-icon
+                                        class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400"
+                                    />
+                                    {{ formatDate(booking.startDate) }} -
+                                    {{ formatDate(booking.endDate) }}
+                                </div>
+                            </div>
+                            <div
+                                class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0"
+                            >
+                                <dollar-sign-icon
+                                    class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400"
+                                />
+                                {{ formatCurrency(booking.totalAmount) }}
+                            </div>
+                        </div>
+                        <div class="mt-2 flex justify-end">
+                            <button
+                                @click="$emit('view-booking-details', booking)"
+                                class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            >
+                                Ver detalles
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { CalendarIcon, DollarSignIcon } from 'lucide-vue-next'
+
+const props = defineProps({
+    bookings: {
+        type: Array,
+        default: () => []
+    }
+})
+
+defineEmits(['go-home', 'view-booking-details'])
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN'
+    }).format(amount)
+}
+
+function formatDate(dateString) {
+    if (!dateString) return ''
+
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat('es-MX', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }).format(date)
+}
+
+function getBookingStatusClass(status) {
+    switch (status) {
+        case 'confirmed':
+            return 'bg-green-100 text-green-800'
+        case 'pending':
+            return 'bg-yellow-100 text-yellow-800'
+        case 'cancelled':
+            return 'bg-red-100 text-red-800'
+        default:
+            return 'bg-gray-100 text-gray-800'
+    }
+}
+
+function getBookingStatusLabel(status) {
+    switch (status) {
+        case 'confirmed':
+            return 'Confirmada'
+        case 'pending':
+            return 'Pendiente'
+        case 'cancelled':
+            return 'Cancelada'
+        default:
+            return status
+    }
+}
+</script>
