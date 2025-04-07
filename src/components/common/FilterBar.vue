@@ -9,6 +9,7 @@
                     <option value="CDMX">Ciudad de México</option>
                     <option value="GDL">Guadalajara</option>
                     <option value="MTY">Monterrey</option>
+                    <option value="MOR">Morelia</option>
                 </select>
             </div>
             <div>
