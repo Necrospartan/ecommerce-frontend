@@ -8,6 +8,7 @@ const router = createRouter({
             path: '/',
             name: 'home',
             component: MainView,
+            redirect: '/',
             children: [
                 {
                     path: '',
@@ -17,9 +18,15 @@ const router = createRouter({
                 },
                 {
                     path: 'reservations',
-                    name: 'reservas',
+                    name: 'reservations',
                     component: () =>
                         import('@/components/layout/ReservationsComponent.vue')
+                },
+                {
+                    path: 'mediaDetail/:id',
+                    name: 'mediaDetail',
+                    component: () =>
+                        import('@/components/layout/MediaDetailComponent.vue')
                 }
             ]
         }
