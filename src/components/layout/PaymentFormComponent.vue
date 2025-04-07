@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div v-if="media != null && reservations != null" class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div class="mb-4">
             <button @click="goBack()"
                 class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
@@ -82,7 +82,7 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-900">Total a pagar:</span>
                                     <span class="text-sm font-medium text-gray-900">{{ formatCurrency(calculateTotal())
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
                         </div>
@@ -106,21 +106,38 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { ArrowLeftIcon } from 'lucide-vue-next';
 import { useMediaStore } from '@/stores/Media/useMediaStore'
 import { useReservationStore } from '@/stores/Booking/useBookingStore'
 import InfoModal from '@/components/common/InfoModal.vue'
+import Decimal from 'decimal.js';
 
 const mediaStore = useMediaStore()
 const { media } = storeToRefs(mediaStore)
 const bookingStore = useReservationStore()
-const { reservations, error, message } = storeToRefs(bookingStore)
+const { reservations, message, status } = storeToRefs(bookingStore)
 const router = useRouter()
 const validationErrors = ref({});
 const paymentForm = ref({});
+
+const isInfoModalOpen = ref(false)
+const infoModal = ref({
+    title: '',
+    message: '',
+    type: ''
+})
+
+onMounted(async () => {
+    if (!media.value) {
+        router.push({ name: 'home' })
+    }
+    if (!reservations.value) {
+        goBack()
+    }
+})
 
 const goBack = () => {
     router.go(-1)
@@ -152,7 +169,7 @@ function formatCurrency(amount) {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 }
 
-function processPayment() {
+async function processPayment() {
     validationErrors.value = {};
     if (!paymentForm.value.cardName) {
         validationErrors.value.cardName = 'El nombre en la tarjeta es obligatorio.';
@@ -168,30 +185,28 @@ function processPayment() {
     }
 
     if (Object.keys(validationErrors.value).length === 0) {
+        const unitPrice = new Decimal(media.value.price_per_day)
+        const quantity = new Decimal(calculateDays())
+        const total = unitPrice.mul(quantity);
         const reservationData = {
             media_id: media.value.id,
             start_date: reservations.value.startDate,
             end_date: reservations.value.endDate,
-            total_price: parseFloat(calculateTotal().toFixed(2))
-        };
-        bookingStore.createReservation(reservationData)
-        infoModal.value = {
-            title: error.value == null ? 'Error' : 'Exito',
-            message: message.value,
-            type: 'info'
+            total_price: total
         }
-        console.log(infoModal.value)
+        await bookingStore.createReservation(reservationData)
+        const title = (status.value < 202 ? 'Exito' : 'Error')
+        const type = (status.value < 202 ? 'success' : 'error')
+        infoModal.value = {
+            title: title,
+            message: message.value,
+            type: type
+        }
         openInfoModal()
     }
 }
 
 //InfOModal
-const isInfoModalOpen = ref(false)
-const infoModal = ref({
-    title: '',
-    message: '',
-    type: ''
-})
 
 const openInfoModal = () => {
     isInfoModalOpen.value = true
@@ -199,5 +214,7 @@ const openInfoModal = () => {
 
 const closeInfoModal = () => {
     isInfoModalOpen.value = false
+    if (infoModal.value.type == 'success')
+        router.push({ name: 'home' })
 }
 </script>

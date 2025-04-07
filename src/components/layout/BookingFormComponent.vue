@@ -160,7 +160,7 @@ function calculateDays() {
     if (!bookingForm.value.startDate || !bookingForm.value.endDate) return 0;
 
     const start = new Date(bookingForm.value.startDate);
-    const end = new Date(bookingForm.value.endDate);
+    const end = new Date(bookingForm.value.endDate); bookingStore
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -193,14 +193,15 @@ function submitBooking() {
     }
 
     if (Object.keys(validationErrors.value).length === 0) {
-        reservations.value = {
+        const reservation = ref({
             mediaId: media.value.id,
             startDate: bookingForm.value.startDate,
             endDate: bookingForm.value.endDate,
             campaignName: bookingForm.value.campaignName,
             campaignDetails: bookingForm.value.campaignDetails,
             total: calculateTotal()
-        }
+        })
+        bookingStore.addReservation(reservation)
         router.push({ name: 'paymentForm' })
     }
 }
