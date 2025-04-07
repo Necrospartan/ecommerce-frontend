@@ -99,6 +99,7 @@
             </div>
         </div>
     </div>
+    <InfoModal :isOpen="isInfoModalOpen" :infoModal="infoModal" @close="closeInfoModal" />
 </template>
 
 <script setup>
@@ -108,13 +109,34 @@ import { storeToRefs } from 'pinia'
 import { ArrowLeftIcon, CalendarIcon } from 'lucide-vue-next';
 import { useMediaStore } from '@/stores/Media/useMediaStore'
 import { API_URL } from '@/utils/config'
+import InfoModal from '@/components/common/InfoModal.vue'
+import { useAuthStore } from '@/stores/Auth/useAuthStore'
+
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
+
+//InfOModal
+const isInfoModalOpen = ref(false)
+const infoModal = ref({
+    title: '',
+    message: '',
+    type: ''
+})
+
+const openInfoModal = () => {
+    isInfoModalOpen.value = true
+}
+
+const closeInfoModal = () => {
+    isInfoModalOpen.value = false
+}
 
 const mediaStore = useMediaStore()
 const route = useRoute()
 const router = useRouter()
 const mediaId = route.params.id
-const { mediaList, status, error, message } = storeToRefs(mediaStore)
-const media = ref(null)
+const { mediaList, media, status, error, message } = storeToRefs(mediaStore)
+// const media = ref(null)
 const reserveDaysMedia = ref(null)
 
 onMounted(async () => {
@@ -125,6 +147,7 @@ onMounted(async () => {
     if (!media.value) {
         router.push({ name: 'home' })
     }
+
     reserveDaysMedia.value = getReserveDayMedia(mediaId)
 })
 
@@ -132,7 +155,16 @@ const goBack = () => {
     router.go(-1)
 }
 const goBookMedia = () => {
-    router.push({ name: 'book', params: { id: mediaId } })
+    if (user.value != null) {
+        router.push({ name: 'bookingForm' })
+    } else {
+        infoModal.value = {
+            title: 'Inicia sesión',
+            message: 'Debes iniciar sesión para reservar este espacio',
+            type: 'info'
+        }
+        openInfoModal()
+    }
 }
 function formatCurrency(amount) {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);

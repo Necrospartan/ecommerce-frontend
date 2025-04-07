@@ -27,6 +27,18 @@ const router = createRouter({
                     name: 'mediaDetail',
                     component: () =>
                         import('@/components/layout/MediaDetailComponent.vue')
+                },
+                {
+                    path: 'bookingForm',
+                    name: 'bookingForm',
+                    component: () =>
+                        import('@/components/layout/BookingFormComponent.vue')
+                },
+                {
+                    path: 'paymentForm',
+                    name: 'paymentForm',
+                    component: () =>
+                        import('@/components/layout/PaymentFormComponent.vue')
                 }
             ]
         }

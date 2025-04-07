@@ -85,7 +85,7 @@ const closeLoginModal = () => {
 
 const handleLogin = () => {
     closeLoginModal()
-    router.push({ name: 'Dashboard' })
+    router.push({ name: 'home' })
 }
 
 //UserMenu

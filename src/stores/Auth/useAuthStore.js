@@ -1,4 +1,4 @@
-import { defineStore, } from 'pinia'
+import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { API_URL } from '@/utils/config'
 
@@ -16,8 +16,8 @@ export const useAuthStore = defineStore('auth', () => {
             const response = await fetch(`${API_URL}auth/login`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
                 },
                 body: JSON.stringify(credenctials)
             })
@@ -45,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token.access_token}` 
+                        Authorization: `Bearer ${token}`
                     }
                 })
                 const data = await response.json()
@@ -73,7 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token.access_token}` 
+                        Authorization: `Bearer ${token}`
                     }
                 })
                 const data = await response.json()

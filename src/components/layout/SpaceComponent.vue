@@ -30,7 +30,7 @@ onMounted(async () => {
     await mediaStore.getMediaList()
     isLoaded.value = true
 })
-const { mediaList, status, error, message } = storeToRefs(mediaStore)
+const { mediaList } = storeToRefs(mediaStore)
 
 defineEmits(['view-details', 'book-media']);
 
