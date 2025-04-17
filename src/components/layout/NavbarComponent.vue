@@ -19,6 +19,12 @@
                         ]">
                             Mis Reservas
                         </router-link>
+                        <router-link v-if="user && user.role == 'Admin'" to="/adminMedia" :class="[
+                            'border-primary text-gray-900 inline-flex items-center px-1 pt-1  text-base font-medium hover:text-gray-600',
+                            $route.path === '/adminMedia' ? 'border-primary border-b-2' : ''
+                        ]">
+                            Administrar Espacios
+                        </router-link>
                     </div>
                 </div>
                 <div class="hidden sm:ml-6 sm:flex sm:items-center">
@@ -85,7 +91,7 @@ const closeLoginModal = () => {
 
 const handleLogin = () => {
     closeLoginModal()
-    router.push({ name: 'home' })
+    // router.push({ name: 'home' })
 }
 
 //UserMenu
@@ -93,9 +99,9 @@ const toggleUserMenu = () => {
     isUserMenuOpen.value = !isUserMenuOpen.value
 }
 
-const handleLogout = () => {
-    authStore.logout()
-    const success = authStore.status == 200 ? 'Success' : 'Error'
+const handleLogout = async () => {
+    await authStore.logout()
+    const success = authStore.status == 200 ? 'success' : 'error'
     infoModal.value = {
         title: authStore.message,
         message: 'Sesión cerrada correctamente',

@@ -53,7 +53,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(['apply-filters'])
+defineEmits(['apply-filters'])
 
 const filters = ref({ ...props.initialFilters })
 

@@ -58,5 +58,82 @@ export const useMediaStore = defineStore('media', () => {
             error.value = err.message
         }
     }
-    return { mediaList, media, error, message, status, getMediaList, getMedia }
+
+    const addMedia = async (data) => {
+        error.value = null
+        message.value = null
+        status.value = null
+        const formData = new FormData()
+        formData.append('name', data.name)
+        formData.append('location', data.location)
+        formData.append('type', data.type)
+        formData.append('image', data.image)
+        formData.append('price_per_day', data.price_per_day)
+        try {
+            const token = JSON.parse(localStorage.getItem('token'))
+            if (token) {
+                const response = await fetch(`${API_URL}media/addMedia`, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: formData
+                })
+                const responseData = await response.json()
+                status.value = response.status
+                message.value = responseData.message
+                if (response.ok) {
+                    media.value = responseData.data
+                } else {
+                    error.value = responseData.errors
+                }
+            }
+        } catch (err) {
+            error.value = err.message
+        }
+    }
+
+    const deleteMedia = async (id) => {
+        error.value = null
+        message.value = null
+        status.value = null
+        try {
+            const token = JSON.parse(localStorage.getItem('token'))
+            if (token) {
+                const response = await fetch(
+                    `${API_URL}media/deleteMedia/${id}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            Accept: 'application/json',
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                )
+                const responseData = await response.json()
+                status.value = response.status
+                message.value = responseData.message
+                if (response.ok) {
+                    media.value = responseData.data
+                    await getMediaList()
+                } else {
+                    error.value = responseData.errors
+                }
+            }
+        } catch (err) {
+            error.value = err.message
+        }
+    }
+    return {
+        mediaList,
+        media,
+        error,
+        message,
+        status,
+        getMediaList,
+        getMedia,
+        addMedia,
+        deleteMedia
+    }
 })
