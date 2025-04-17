@@ -212,13 +212,11 @@ function validateForm() {
 }
 
 function handleSubmit() {
-    isLoading.value = true
-    console.log(formData.value)
     if (props.isEditMode) {
         getDifferences()
     }
-    console.log(formData.value)
     if (validateForm()) {
+        isLoading.value = true
         emit('save', { ...formData.value })
     }
 }

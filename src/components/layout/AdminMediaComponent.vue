@@ -193,6 +193,10 @@ async function saveMedia(mediaData) {
         message: mediaStore.message,
         type: success
     }
+    await mediaStore.getMediaList()
+    //Forzar recarga la nueva imagen del elemento modificado
+    mediaList.value[selectedMedia.value.id - 1].image = `${mediaList.value[selectedMedia.value.id - 1].image}?t=${Date.now()}`
+    //
     openInfoModal()
 }
 function openEditModal(media) {

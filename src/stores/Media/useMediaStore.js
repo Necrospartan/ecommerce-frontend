@@ -120,7 +120,7 @@ export const useMediaStore = defineStore('media', () => {
                 const response = await fetch(
                     `${API_URL}media/updateMedia/${id}`,
                     {
-                        method: 'PUT',
+                        method: 'POST',
                         headers: {
                             Accept: 'application/json',
                             Authorization: `Bearer ${token}`
