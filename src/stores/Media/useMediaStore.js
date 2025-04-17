@@ -94,6 +94,54 @@ export const useMediaStore = defineStore('media', () => {
         }
     }
 
+    const updateMedia = async (data, id) => {
+        error.value = null
+        message.value = null
+        status.value = null
+        const formData = new FormData()
+        if (data.name !== null && data.name !== undefined)
+            formData.append('name', data.name)
+
+        if (data.location !== null && data.location !== undefined)
+            formData.append('location', data.location)
+
+        if (data.type !== null && data.type !== undefined)
+            formData.append('type', data.type)
+
+        if (data.image !== null && data.image !== undefined)
+            formData.append('image', data.image)
+
+        if (data.price_per_day !== null && data.price_per_day !== undefined)
+            formData.append('price_per_day', data.price_per_day)
+
+        try {
+            const token = JSON.parse(localStorage.getItem('token'))
+            if (token) {
+                const response = await fetch(
+                    `${API_URL}media/updateMedia/${id}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            Accept: 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: formData
+                    }
+                )
+                const responseData = await response.json()
+                status.value = response.status
+                message.value = responseData.message
+                if (response.ok) {
+                    media.value = responseData.data
+                } else {
+                    error.value = responseData.errors
+                }
+            }
+        } catch (err) {
+            error.value = err.message
+        }
+    }
+
     const deleteMedia = async (id) => {
         error.value = null
         message.value = null
@@ -134,6 +182,7 @@ export const useMediaStore = defineStore('media', () => {
         getMediaList,
         getMedia,
         addMedia,
+        updateMedia,
         deleteMedia
     }
 })

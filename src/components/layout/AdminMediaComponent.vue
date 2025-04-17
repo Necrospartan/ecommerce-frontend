@@ -178,9 +178,16 @@ function openCreateModal() {
 }
 
 async function saveMedia(mediaData) {
-    await mediaStore.addMedia(mediaData)
+    if (isEditMode.value) {
+        await mediaStore.updateMedia(mediaData, selectedMedia.value.id)
+        isEditMode.value = false
+    }
+    else {
+        await mediaStore.addMedia(mediaData)
+    }
     closeFormModal()
-    const success = mediaStore.status == 201 ? 'success' : 'error'
+
+    const success = mediaStore.status <= 201 ? 'success' : 'error'
     infoModal.value = {
         title: mediaStore.message,
         message: mediaStore.message,

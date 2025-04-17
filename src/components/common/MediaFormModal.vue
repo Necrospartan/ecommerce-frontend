@@ -147,7 +147,6 @@ const props = defineProps({
     }
 })
 
-
 const emit = defineEmits(['close', 'save'])
 
 const isLoading = ref(false)
@@ -172,7 +171,11 @@ const imagePreviewUrl = ref(null)
 
 onMounted(() => {
     if (props.media) {
-        formData.value = { ...props.media }
+        formData.value.name = props.media.name || ''
+        formData.value.location = props.media.location || 'CDMX'
+        formData.value.type = props.media.type || 'billboard'
+        formData.value.image = props.media.image || null
+        formData.value.price_per_day = props.media.price_per_day || 0
         if (props.media.image) {
             imagePreviewUrl.value = props.media.image
         }
@@ -180,35 +183,54 @@ onMounted(() => {
 })
 
 function validateForm() {
-    errors.value = {}
-    let isValid = true
+    errors.value = {};
+    let isValid = true;
 
-    if (!formData.value.name.trim()) {
-        errors.value.name = 'El nombre es obligatorio'
-        isValid = false
+    if (formData.value.name && !formData.value.name.trim()) {
+        errors.value.name = 'El nombre es obligatorio';
+        isValid = false;
     }
 
-    if (!formData.value.image) {
-        errors.value.image = 'La imagen es obligatoria'
-        isValid = false
-    } else if (!(formData.value.image instanceof File)) {
-        errors.value.image = 'El formato de la imagen no es válido'
-        isValid = false
+    if (formData.value.image) {
+        if (!(formData.value.image instanceof File)) {
+            errors.value.image = 'El formato de la imagen no es válido';
+            isValid = false;
+        }
+    } else if (!props.isEditMode) {
+        errors.value.image = 'La imagen es obligatoria';
+        isValid = false;
     }
 
-    if (formData.value.price_per_day <= 0) {
-        errors.value.price_per_day = 'El precio debe ser mayor que cero'
-        isValid = false
+    if (formData.value.price_per_day !== null && formData.value.price_per_day !== undefined) {
+        if (formData.value.price_per_day <= 0) {
+            errors.value.price_per_day = 'El precio debe ser mayor que cero';
+            isValid = false;
+        }
     }
 
-    return isValid
+    return isValid;
 }
 
 function handleSubmit() {
     isLoading.value = true
+    console.log(formData.value)
+    if (props.isEditMode) {
+        getDifferences()
+    }
+    console.log(formData.value)
     if (validateForm()) {
         emit('save', { ...formData.value })
     }
+}
+
+function getDifferences() {
+    const differences = {}
+    for (const key in formData.value) {
+        if (formData.value[key] !== props.media[key]) {
+            differences[key] = formData.value[key]
+        }
+    }
+    formData.value = differences
 }
 
 function closeModal() {
@@ -220,7 +242,7 @@ function handleFileChange(event) {
     readFile(file)
     if (file && !errors.value.image) {
         formData.value.image = file
-        createImagePreview(file) // Para la previsualización
+        createImagePreview(file)
     }
 }
 
@@ -229,7 +251,7 @@ function handleDrop(event) {
     readFile(file)
     if (file && !errors.value.image) {
         formData.value.image = file
-        createImagePreview(file) // Para la previsualización
+        createImagePreview(file)
     }
 }
 
