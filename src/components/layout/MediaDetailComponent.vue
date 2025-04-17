@@ -192,10 +192,10 @@ const daysInMonth = computed(() => {
 // Generar el calendario con días vacíos al inicio
 const calendarDays = computed(() => {
     const days = []
-    for (let i = 0 i < firstDayOfMonth.value i++) {
+    for (let i = 0; i < firstDayOfMonth.value; i++) {
         days.push(null)
     }
-    for (let day = 1 day <= daysInMonth.value day++) {
+    for (let day = 1; day <= daysInMonth.value; day++) {
         days.push(day)
     }
     return days

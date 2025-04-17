@@ -95,6 +95,11 @@ const isBookingDetailsModalOpen = ref(false)
 onMounted(async () => {
     if (user.value == null)
         gohome()
+    loadBookingsWithMediaDetails()
+})
+
+async function loadBookingsWithMediaDetails() {
+    bookings.value = []
     await bookingStore.getReservations()
     if (mediaList.value == null)
         await mediaStore.getMediaList()
@@ -105,7 +110,8 @@ onMounted(async () => {
         }
         bookings.value.push(booking)
     }
-})
+}
+
 function gohome() {
     router.push({ name: 'home' })
 }
@@ -145,8 +151,9 @@ function getBookingStatusLabel(status) {
     }
 }
 
-function openBookingDetailsModal(booking) {
-    selectedBooking.value = booking
+async function openBookingDetailsModal(booking) {
+    await loadBookingsWithMediaDetails()
+    selectedBooking.value = bookings.value.find(b => b.id === booking.id)
     isBookingDetailsModalOpen.value = true
 }
 
