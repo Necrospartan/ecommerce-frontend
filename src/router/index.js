@@ -23,6 +23,12 @@ const router = createRouter({
                         import('@/components/layout/ReservationsComponent.vue')
                 },
                 {
+                    path: 'adminMedia',
+                    name: 'adminMedia',
+                    component: () =>
+                        import('@/components/layout/AdminMediaComponent.vue')
+                },
+                {
                     path: 'mediaDetail/:id',
                     name: 'mediaDetail',
                     component: () =>

@@ -36,7 +36,7 @@
                         </div>
                         <p v-if="validationErrors.endDate" class="mt-2 text-base text-red-600">{{
                             validationErrors.endDate
-                        }}</p>
+                            }}</p>
                     </div>
 
                     <div class="sm:col-span-6">
@@ -78,7 +78,7 @@
                             <div class="flex justify-between">
                                 <span class="text-base font-medium text-gray-900">Total:</span>
                                 <span class="text-base font-medium text-gray-900">{{ formatCurrency(calculateTotal())
-                                    }}</span>
+                                }}</span>
                             </div>
                         </div>
                     </div>
@@ -102,17 +102,16 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { ArrowLeftIcon } from 'lucide-vue-next';
+import { ArrowLeftIcon } from 'lucide-vue-next'
 import { useMediaStore } from '@/stores/Media/useMediaStore'
 import { useReservationStore } from '@/stores/Booking/useBookingStore'
 
 const mediaStore = useMediaStore()
 const { media } = storeToRefs(mediaStore)
 const bookingStore = useReservationStore()
-const { reservations } = storeToRefs(bookingStore)
 
 const router = useRouter()
-const validationErrors = ref({});
+const validationErrors = ref({})
 
 const bookingForm = ref({
     startDate: getTomorrow(),
@@ -122,7 +121,7 @@ const bookingForm = ref({
 })
 
 onMounted(async () => {
-    bookingStore.clearReservations();
+    bookingStore.clearReservations()
     if (!media.value) {
         router.push({ name: 'home' })
     }
@@ -136,60 +135,60 @@ const goBack = () => {
 function formatDateForInput(date) {
     const day = date.getDate().toString().padStart(2, '0')
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    return date.getFullYear() + '-' + month + '-' + day;
+    return date.getFullYear() + '-' + month + '-' + day
 }
 
 function getTomorrow() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return formatDateForInput(tomorrow);
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return formatDateForInput(tomorrow)
 }
 
 function getNextWeek() {
-    const nextWeek = new Date();
-    nextWeek.setDate(nextWeek.getDate() + 8);
-    return formatDateForInput(nextWeek);
+    const nextWeek = new Date()
+    nextWeek.setDate(nextWeek.getDate() + 8)
+    return formatDateForInput(nextWeek)
 }
 
 function formatDate(dateString) {
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
+    const [year, month, day] = dateString.split('-')
+    return `${day}/${month}/${year}`
 }
 
 function calculateDays() {
-    if (!bookingForm.value.startDate || !bookingForm.value.endDate) return 0;
+    if (!bookingForm.value.startDate || !bookingForm.value.endDate) return 0
 
-    const start = new Date(bookingForm.value.startDate);
-    const end = new Date(bookingForm.value.endDate); bookingStore
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const start = new Date(bookingForm.value.startDate)
+    const end = new Date(bookingForm.value.endDate)
+    const diffTime = Math.abs(end - start)
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-    return diffDays + 1;
+    return diffDays + 1
 }
 
 function calculateTotal() {
-    const days = calculateDays();
-    return media.value.price_per_day * days;
+    const days = calculateDays()
+    return media.value.price_per_day * days
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
 }
 
 function submitBooking() {
     // Validate form
-    validationErrors.value = {};
+    validationErrors.value = {}
 
     if (!bookingForm.value.startDate) {
-        validationErrors.value.startDate = 'La fecha de inicio es requerida';
+        validationErrors.value.startDate = 'La fecha de inicio es requerida'
     }
 
     if (!bookingForm.value.endDate) {
-        validationErrors.value.endDate = 'La fecha de fin es requerida';
+        validationErrors.value.endDate = 'La fecha de fin es requerida'
     }
 
     if (new Date(bookingForm.value.startDate) >= new Date(bookingForm.value.endDate)) {
-        validationErrors.value.endDate = 'La fecha de fin debe ser posterior a la fecha de inicio';
+        validationErrors.value.endDate = 'La fecha de fin debe ser posterior a la fecha de inicio'
     }
 
     if (Object.keys(validationErrors.value).length === 0) {

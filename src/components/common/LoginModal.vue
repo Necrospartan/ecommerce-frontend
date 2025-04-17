@@ -116,6 +116,7 @@ const clearGeneralError = () => {
 
 const handleLogin = async () => {
     isLoading.value = true
+    passwordVisible.value = false
     clearFormErrors()
     clearGeneralError()
 

@@ -82,7 +82,7 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-900">Total a pagar:</span>
                                     <span class="text-sm font-medium text-gray-900">{{ formatCurrency(calculateTotal())
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
                         </div>
@@ -109,19 +109,19 @@
 import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { ArrowLeftIcon } from 'lucide-vue-next';
+import { ArrowLeftIcon } from 'lucide-vue-next'
 import { useMediaStore } from '@/stores/Media/useMediaStore'
 import { useReservationStore } from '@/stores/Booking/useBookingStore'
 import InfoModal from '@/components/common/InfoModal.vue'
-import Decimal from 'decimal.js';
+import Decimal from 'decimal.js'
 
 const mediaStore = useMediaStore()
 const { media } = storeToRefs(mediaStore)
 const bookingStore = useReservationStore()
 const { reservations, message, status } = storeToRefs(bookingStore)
 const router = useRouter()
-const validationErrors = ref({});
-const paymentForm = ref({});
+const validationErrors = ref({})
+const paymentForm = ref({})
 
 const isInfoModalOpen = ref(false)
 const infoModal = ref({
@@ -145,49 +145,49 @@ const goBack = () => {
 
 
 function formatDate(dateString) {
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
+    const [year, month, day] = dateString.split('-')
+    return `${day}/${month}/${year}`
 }
 
 function calculateDays() {
-    if (!reservations.value.startDate || !reservations.value.endDate) return 0;
+    if (!reservations.value.startDate || !reservations.value.endDate) return 0
 
-    const start = new Date(reservations.value.startDate);
-    const end = new Date(reservations.value.endDate);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const start = new Date(reservations.value.startDate)
+    const end = new Date(reservations.value.endDate)
+    const diffTime = Math.abs(end - start)
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-    return diffDays + 1;
+    return diffDays + 1
 }
 
 function calculateTotal() {
-    const days = calculateDays();
-    return media.value.price_per_day * days;
+    const days = calculateDays()
+    return media.value.price_per_day * days
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
 }
 
 async function processPayment() {
-    validationErrors.value = {};
+    validationErrors.value = {}
     if (!paymentForm.value.cardName) {
-        validationErrors.value.cardName = 'El nombre en la tarjeta es obligatorio.';
+        validationErrors.value.cardName = 'El nombre en la tarjeta es obligatorio.'
     }
     if (!paymentForm.value.cardNumber || !/^\d{16}$/.test(paymentForm.value.cardNumber)) {
-        validationErrors.value.cardNumber = 'El número de tarjeta debe tener 16 dígitos.';
+        validationErrors.value.cardNumber = 'El número de tarjeta debe tener 16 dígitos.'
     }
     if (!paymentForm.value.expiryDate || !/^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(paymentForm.value.expiryDate)) {
-        validationErrors.value.expiryDate = 'La fecha de expiración debe estar en formato MM/AA.';
+        validationErrors.value.expiryDate = 'La fecha de expiración debe estar en formato MM/AA.'
     }
     if (!paymentForm.value.cvv || !/^\d{3}$/.test(paymentForm.value.cvv)) {
-        validationErrors.value.cvv = 'El CVV debe tener 3 dígitos.';
+        validationErrors.value.cvv = 'El CVV debe tener 3 dígitos.'
     }
 
     if (Object.keys(validationErrors.value).length === 0) {
         const unitPrice = new Decimal(media.value.price_per_day)
         const quantity = new Decimal(calculateDays())
-        const total = unitPrice.mul(quantity);
+        const total = unitPrice.mul(quantity)
         const reservationData = {
             media_id: media.value.id,
             start_date: reservations.value.startDate,

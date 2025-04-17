@@ -106,7 +106,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { ArrowLeftIcon, CalendarIcon } from 'lucide-vue-next';
+import { ArrowLeftIcon, CalendarIcon } from 'lucide-vue-next'
 import { useMediaStore } from '@/stores/Media/useMediaStore'
 import { API_URL } from '@/utils/config'
 import InfoModal from '@/components/common/InfoModal.vue'
@@ -136,7 +136,6 @@ const route = useRoute()
 const router = useRouter()
 const mediaId = route.params.id
 const { mediaList, media, status, error, message } = storeToRefs(mediaStore)
-// const media = ref(null)
 const reserveDaysMedia = ref(null)
 
 onMounted(async () => {
@@ -167,7 +166,7 @@ const goBookMedia = () => {
     }
 }
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
 }
 
 // Obtener la fecha actual

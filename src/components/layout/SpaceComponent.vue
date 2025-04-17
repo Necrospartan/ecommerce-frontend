@@ -17,42 +17,41 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { SearchIcon } from 'lucide-vue-next';
-import FilterBar from '@/components/common/FilterBar.vue';
-import MediaCard from '@/components/common/MediaCard.vue';
-import { useMediaStore } from '@/stores/Media/useMediaStore';
+import { SearchIcon } from 'lucide-vue-next'
+import FilterBar from '@/components/common/FilterBar.vue'
+import MediaCard from '@/components/common/MediaCard.vue'
+import { useMediaStore } from '@/stores/Media/useMediaStore'
 
-const mediaStore = useMediaStore();
-const isLoaded = ref(false);
+const mediaStore = useMediaStore()
+const isLoaded = ref(false)
 onMounted(async () => {
     await mediaStore.getMediaList()
     isLoaded.value = true
 })
 const { mediaList } = storeToRefs(mediaStore)
 
-defineEmits(['view-details', 'book-media']);
+defineEmits(['view-details', 'book-media'])
 
 // Filters
 const filters = ref({
     location: '',
     type: '',
     date: ''
-});
+})
 // Computed properties
 const filteredMedia = computed(() => {
     const filtered = mediaList.value.filter(media => {
-        const locationMatch = !filters.value.location || media.location === filters.value.location;
-        const typeMatch = !filters.value.type || media.type === filters.value.type;
-        return locationMatch && typeMatch;
-    });
-    return filtered;
-});
+        const locationMatch = !filters.value.location || media.location === filters.value.location
+        const typeMatch = !filters.value.type || media.type === filters.value.type
+        return locationMatch && typeMatch
+    })
+    return filtered
+})
 
 // Methods
 function applyFilters(newFilters) {
-    filters.value = { ...newFilters };
-    // In a real app, this would trigger an API call with the filters
+    filters.value = { ...newFilters }
 }
 </script>

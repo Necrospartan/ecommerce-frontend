@@ -36,8 +36,8 @@
                             </div>
                             <div class="ml-2 flex-shrink-0 flex">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                    :class="getBookingStatusClass(booking.status)">
-                                    {{ getBookingStatusLabel(booking.status) }}
+                                    :class="getBookingStatusClass(booking.payment_status)">
+                                    {{ getBookingStatusLabel(booking.payment_status) }}
                                 </span>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="mt-2 flex justify-end">
-                            <button @click="$emit('view-booking-details', booking)"
+                            <button @click="openBookingDetailsModal(booking)"
                                 class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                                 Ver detalles
                             </button>
@@ -65,73 +65,100 @@
             </div>
         </div>
     </div>
+    <BookingDetailsModal :isOpen="isBookingDetailsModalOpen" :booking="selectedBooking"
+        @close="closeBookingDetailsModal" />
 </template>
 
 <script setup>
-import { CalendarIcon, DollarSignIcon } from 'lucide-vue-next';
+import { CalendarIcon, DollarSignIcon } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useReservationStore } from '@/stores/Booking/useBookingStore'
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import { useMediaStore } from '@/stores/Media/useMediaStore'
+import { useAuthStore } from '@/stores/Auth/useAuthStore'
+import BookingDetailsModal from '@/components/common/BookingDetailsModal.vue'
 
 const bookingStore = useReservationStore()
 const { reservations } = storeToRefs(bookingStore)
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 const router = useRouter()
 
 const mediaStore = useMediaStore()
 const { mediaList } = storeToRefs(mediaStore)
 const bookings = ref([])
+const selectedBooking = ref(null)
+
+const isBookingDetailsModalOpen = ref(false)
+
 onMounted(async () => {
-    await bookingStore.getReservations();
+    if (user.value == null)
+        gohome()
+    loadBookingsWithMediaDetails()
+})
+
+async function loadBookingsWithMediaDetails() {
+    bookings.value = []
+    await bookingStore.getReservations()
     if (mediaList.value == null)
         await mediaStore.getMediaList()
     for (const booking of reservations.value) {
-        const media = mediaList.value.find(media => media.id === booking.media_id);
+        const media = mediaList.value.find(media => media.id === booking.media_id)
         if (media) {
-            booking.media = media;
+            booking.media = media
         }
-        bookings.value.push(booking);
+        bookings.value.push(booking)
     }
-})
+}
+
 function gohome() {
     router.push({ name: 'home' })
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
 }
 
 function formatDate(dateString) {
-    if (!dateString) return '';
-
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+    const [year, month, day] = dateString.split('-')
+    return `${day}/${month}/${year}`
 }
 
 function getBookingStatusClass(status) {
     switch (status) {
-        case 'confirmed':
-            return 'bg-green-100 text-green-800';
-        case 'pending':
-            return 'bg-yellow-100 text-yellow-800';
-        case 'cancelled':
-            return 'bg-red-100 text-red-800';
+        case 'pagado':
+            return 'bg-green-100 text-green-800'
+        case 'procesando':
+            return 'bg-yellow-100 text-yellow-800'
+        case 'cancelado':
+            return 'bg-red-100 text-red-800'
         default:
-            return 'bg-gray-100 text-gray-800';
+            return 'bg-gray-100 text-gray-800'
     }
 }
 
 function getBookingStatusLabel(status) {
     switch (status) {
-        case 'confirmed':
-            return 'Confirmada';
-        case 'pending':
-            return 'Pendiente';
-        case 'cancelled':
-            return 'Cancelada';
+        case 'pagado':
+            return 'Pagado'
+        case 'procesando':
+            return 'Procesando'
+        case 'cancelado':
+            return 'Cancelada'
         default:
-            return status;
+            return status
     }
+}
+
+async function openBookingDetailsModal(booking) {
+    await loadBookingsWithMediaDetails()
+    selectedBooking.value = bookings.value.find(b => b.id === booking.id)
+    isBookingDetailsModalOpen.value = true
+}
+
+function closeBookingDetailsModal() {
+    isBookingDetailsModalOpen.value = false
+    selectedBooking.value = null
 }
 </script>
